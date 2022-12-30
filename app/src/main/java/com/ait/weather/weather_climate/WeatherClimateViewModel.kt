@@ -3,15 +3,27 @@ package com.ait.weather.weather_climate
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.ait.weather.Repository.ApiCall
 import com.google.gson.Gson
 import com.ait.weather.Repository.WCRepository
 import com.ait.weather.Repository.WCResponse
 import com.ait.weather.Repository.model.WCExample
+import com.ait.weather.common.WCApplication
+import com.ait.weather.common.WCApplication.Companion.instance
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class WeatherClimateViewModel(mApplication: Application) : AndroidViewModel(mApplication) {
+class WeatherClimateViewModel @Inject constructor(mApplication: Application,val apiCall: ApiCall) : AndroidViewModel(mApplication) {
+
+    /*init {
+        (mApplication as WCApplication).getComponent().inject(this)
+    }*/
+
+   /* @Inject
+    lateinit var apiCall: ApiCall*/
+    var a =0
     val responseSuccess by lazy{MutableLiveData<WCResponse<WCExample>>()}
 
     fun setAddressInFormat(value: String) {
@@ -27,8 +39,8 @@ class WeatherClimateViewModel(mApplication: Application) : AndroidViewModel(mApp
     }
 
     fun retrieveClimate(){
-        val climate=WCRepository.getClimate()
-        climate?.enqueue(object : Callback<WCExample>{
+        val climate = apiCall.getClimate()
+        climate.enqueue(object : Callback<WCExample>{
             override fun onResponse(call: Call<WCExample>, response: Response<WCExample>) {
                 if(response.isSuccessful){
                     responseSuccess.postValue(WCResponse.success(response.body()))

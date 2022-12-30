@@ -11,11 +11,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.LocationCallback
@@ -31,12 +29,15 @@ import com.ait.weather.utilities.WCUtilities
 import kotlinx.android.synthetic.main.ip_activity_weather_climate.*
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class WeatherClimateActivity : AppCompatActivity() {
     private var isManualPermissionRequired = false
     var climate=ArrayList<Int>()
-    private  val  itemPrintViewModel :WeatherClimateViewModel by lazy{ ViewModelProvider(this)[WeatherClimateViewModel::class.java] }
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var itemPrintViewModel :WeatherClimateViewModel
     private var itemPrintAdapter:WeatherClimateAdapter?=null
     private val date = Calendar.getInstance().time
     companion object {
@@ -46,7 +47,8 @@ class WeatherClimateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ip_activity_weather_climate)
-
+        instance?.getComponent()?.inject(this)
+        itemPrintViewModel = ViewModelProvider(this,viewModelFactory)[WeatherClimateViewModel::class.java]
         rv_item.layoutManager=LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         itemPrintAdapter=WeatherClimateAdapter(this, climate)
         rv_item.adapter=itemPrintAdapter
@@ -56,6 +58,7 @@ class WeatherClimateActivity : AppCompatActivity() {
         tv_date.text=currentDate
         itemPrintViewModel.retrieveClimate()
         observeViewModel()
+        itemPrintViewModel.a = 10
     }
 
     private fun observeViewModel() {

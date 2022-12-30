@@ -3,6 +3,7 @@ package com.ait.weather.retrofit
 import com.google.gson.GsonBuilder
 import com.ait.weather.Repository.WCRepository
 import com.ait.weather.service.WCClient
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,7 +13,7 @@ object WCRetrofit {
     val gson = GsonBuilder()
         .setLenient()
         .create()
-    val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    val logger:Interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     val okHttp = OkHttpClient.Builder().addInterceptor(logger)
     fun retrofit(): WCClient? {
 
